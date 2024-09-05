@@ -29,15 +29,27 @@ import json
 import os
 import pandas
 import numpy
+import io
+import sys
 
 {script}
 
 def run():
     try:
+        # Redirect stdout to capture prints during execution
+        old_stdout = sys.stdout
+        redirected_output = io.StringIO()
+        sys.stdout = redirected_output
+        
         # Execute the main function and ensure it returns a dictionary
         result = main()
+        
+        # Restore stdout
+        sys.stdout = old_stdout
+        
         if not isinstance(result, dict):
             raise ValueError("Execution did not return valid JSON")
+        
         return json.dumps(result)
     except Exception as e:
         return json.dumps({{"error": str(e)}})
